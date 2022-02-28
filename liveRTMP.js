@@ -106,3 +106,29 @@ async function main() {
                 timeout: 0
             });
         }
+
+
+
+
+        await page.evaluate(filename=>{
+            window.postMessage({type: 'SET_EXPORT_PATH', filename: filename}, '*')
+            window.postMessage({type: 'REC_STOP'}, '*')
+        }, exportname)
+
+        // Wait for download of webm to complete
+        await page.waitForSelector('html.downloadComplete', {timeout: 0})
+        await page.close()
+        await browser.close()
+
+        if(platform == "linux"){
+            xvfb.stopSync()
+        }
+        
+        fs.unlinkSync(homedir + "/Downloads/liveMeeting.webm");
+        
+    }catch(err) {
+        console.log(err)
+    }
+}
+
+main()
